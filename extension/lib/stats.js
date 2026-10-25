@@ -21,7 +21,7 @@ class AiUsageDailyBars extends St.DrawingArea {
             const [ok, x] = this.transform_stage_point(sx, sy);
             if (!ok)
                 return Clutter.EVENT_PROPAGATE;
-            const [w] = this.get_surface_size();
+            const w = this.width;
             const i = Math.max(0, Math.min(this._series.length - 1, Math.floor(x / w * this._series.length)));
             if (i !== this._hover) {
                 this._hover = i;

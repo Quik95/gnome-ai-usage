@@ -54,7 +54,8 @@ class AiUsageChartCanvas extends St.DrawingArea {
         const model = this._chart.model;
         if (!model || model.series.length === 0)
             return;
-        const [w] = this.get_surface_size();
+        // get_surface_size() is only meaningful inside a repaint.
+        const w = this.width;
         const pw = w - PAD.left - PAD.right;
         const t = model.minT + (x - PAD.left) / pw * (model.maxT - model.minT);
         const i = nearestIndex(model.series, t);
