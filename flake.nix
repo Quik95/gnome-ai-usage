@@ -33,6 +33,12 @@
   in {
     formatter = forEachSystem (system: nixpkgs.legacyPackages.${system}.alejandra);
 
+    packages = forEachSystem (system: {
+      default = nixpkgs.legacyPackages.${system}.callPackage ./package.nix {
+        inherit (inputs) kde-ai-usage;
+      };
+    });
+
     devShells = forEachSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
