@@ -24,6 +24,7 @@
   };
 
   outputs = {
+    self,
     nixpkgs,
     devenv,
     systems,
@@ -38,6 +39,35 @@
         inherit (inputs) kde-ai-usage;
       };
     });
+
+    checks = forEachSystem (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+        package = self.packages.${system}.default;
+        extensionDir = "${package}/share/gnome-shell/extensions/${package.extensionUuid}";
+      in {
+        inherit package;
+
+        formatting = pkgs.runCommand "alejandra-check" {nativeBuildInputs = [pkgs.alejandra];} ''
+          alejandra --check ${self}
+          touch $out
+        '';
+
+        # The converted upstream modules, the history-io round trip and the
+        # mapping helpers, against provider results normalized from upstream's
+        # recorded fixtures (no network, no credentials).
+        gjs = pkgs.runCommand "gjs-tests" {nativeBuildInputs = [pkgs.gjs];} ''
+          export HOME=$TMPDIR XDG_CACHE_HOME=$TMPDIR/cache
+          mkdir fixtures
+          for f in claude-success openai-codex-success claude-offline; do
+            ${extensionDir}/tools/sh/get-ai-usage --normalize \
+              <${inputs.kde-ai-usage}/tests/fixtures/$f.json >fixtures/$f.json
+          done
+          EXT_DIR=${extensionDir} FIXTURES_DIR=$PWD/fixtures gjs -m ${./tests/extension.test.js}
+          touch $out
+        '';
+      }
+    );
 
     devShells = forEachSystem (
       system: let
