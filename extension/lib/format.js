@@ -51,6 +51,12 @@ export function parseHex(hex) {
     return null;
 }
 
+// "#rrggbb" plus an alpha as a CSS rgba() string (St has no #rrggbbaa).
+export function rgbaCss(hex, alpha) {
+    const [r, g, b] = (parseHex(hex) ?? [0.5, 0.5, 0.5]).map(c => Math.round(c * 255));
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 // Black or white text for a filled accent background.
 export function contrastText(hex) {
     const rgb = parseHex(hex);
@@ -149,4 +155,65 @@ export function windowForGranularity(windows, granularity) {
     if (!windows?.length)
         return null;
     return windows.find(w => w.granularity === granularity) ?? windows[windows.length - 1];
+}
+
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+// Tiles for the shared `stats` shape, in upstream's order. Tiles whose figure
+// a provider does not record are left out rather than shown as zero.
+export function statTiles(stats) {
+    const s = stats || {};
+    const tiles = [];
+    const add = (value, label, sub = '', tip = '') => tiles.push({value, label, sub, tip});
+    if ((s.totalTokens || 0) > 0)
+        add(formatTokens(s.totalTokens), 'tokens', '', 'Total tokens across all models');
+    add(String(Math.round(s.totalSessions || 0)), 'sessions', '', `${formatTokens(s.totalMessages || 0)} messages total`);
+    add(`${Math.round(s.activeDays || 0)}${(s.spanDays || 0) > 0 ? `/${Math.round(s.spanDays)}` : ''}`,
+        'active days', '', s.firstDate ? `Since ${s.firstDate}` : '');
+    add(`${Math.round(s.currentStreak || 0)}d`, 'streak', `best ${Math.round(s.longestStreak || 0)}d`,
+        'Current consecutive-day streak');
+    add(formatDuration(s.longestSessionMs || 0), 'longest session',
+        (s.longestSessionMessages || 0) > 0 ? plural(Math.round(s.longestSessionMessages), 'msg', 'msgs') : '');
+    if (s.peakHour !== undefined && s.peakHour !== null && s.peakHour >= 0)
+        add(formatHour(s.peakHour), 'peak hour', '', 'Hour of day with the most activity');
+    if ((s.totalToolCalls || 0) > 0)
+        add(formatTokens(s.totalToolCalls), 'tool calls', '', 'Total tool invocations across all sessions');
+    if ((s.totalCostUSD || 0) > 0)
+        add(money(s.totalCostUSD, s.currency || 'USD'), 'spend', '', 'Total cost across all models');
+    if ((s.totalWebSearches || 0) > 0)
+        add(formatTokens(s.totalWebSearches), 'web searches');
+    if ((s.totalFiles || 0) > 0)
+        add(formatTokens(s.totalFiles), 'files touched');
+    if ((s.totalRepositories || 0) > 0)
+        add(String(Math.round(s.totalRepositories)), 'repos');
+    return tiles;
+}
+
+export function dailyUnitLabel(unit) {
+    if (unit === 'requests')
+        return ['Requests / day', 'requests'];
+    if (unit === 'messages')
+        return ['Messages / day', 'messages'];
+    return ['Tokens / day', 'tokens'];
+}
+
+// Model rows sorted by token total, each with its share of all tokens.
+export function modelRows(stats) {
+    const models = stats?.models && typeof stats.models === 'object' ? stats.models : {};
+    const total = stats?.totalTokens || 0;
+    return Object.keys(models)
+        .map(name => {
+            const m = models[name] || {};
+            return {
+                name,
+                short: shortenModelName(name),
+                input: m.input,
+                output: m.output,
+                sessions: m.sessions,
+                cost: m.cost || 0,
+                share: total > 0 ? Math.min(1, Math.max(0, (m.total || 0) / total)) : null,
+                total: m.total || 0,
+            };
+        })
+        .sort((a, b) => b.total - a.total);
 }

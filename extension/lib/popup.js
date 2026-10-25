@@ -7,8 +7,9 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 import * as FeatureTabs from '../shared/FeatureTabs.js';
 import * as Format from '../shared/Format.js';
 import {enabledFeatureTabs, enabledProviders} from './providers.js';
-import {pickActiveTab, popupTabs, windowForGranularity} from './format.js';
+import {pickActiveTab, popupTabs, rgbaCss, windowForGranularity} from './format.js';
 import {UsageChart} from './chart.js';
+import {statsView} from './stats.js';
 import {Tooltips, hbox, label, paragraph, quotaRow, spacer, statusChip, vbox} from './widgets.js';
 
 const TICK_SECONDS = 30;
@@ -31,6 +32,7 @@ export class Popup {
         this._countdowns = [];
         this._tickId = 0;
         this.activeId = this._settings.get_string('last-tab');
+        this._subTab = 'usage';
 
         this.actor = vbox('ai-usage-popup');
         this._buildHeader();
@@ -122,6 +124,8 @@ export class Popup {
     }
 
     _setActive(id, remember) {
+        if (id !== this.activeId)
+            this._subTab = 'usage';
         this.activeId = id;
         if (remember && id && this._settings.get_string('last-tab') !== id)
             this._settings.set_string('last-tab', id);
@@ -258,7 +262,35 @@ export class Popup {
             return vbox();
         if (!provider)
             return this._emptyView();
-        return this._usageView(provider);
+        if (provider.details?.stats?.available !== true)
+            return this._usageView(provider);
+
+        const box = vbox('ai-usage-view');
+        box.add_child(this._subToggle(this.accentFor(provider.id)));
+        box.add_child(this._subTab === 'stats'
+            ? statsView(provider.details.stats, this.accentFor(provider.id), this._tooltips)
+            : this._usageView(provider));
+        return box;
+    }
+
+    _subToggle(accent) {
+        const row = hbox('ai-usage-subtabs');
+        for (const [id, text] of [['usage', _('Usage')], ['stats', _('Stats')]]) {
+            const active = this._subTab === id;
+            const b = new St.Button({
+                style_class: `ai-usage-subtab${active ? ' active' : ''}`,
+                label: text,
+                x_expand: true,
+                can_focus: true,
+                style: active ? `color: ${accent}; background-color: ${rgbaCss(accent, 0.2)};` : '',
+            });
+            b.connect('clicked', () => {
+                this._subTab = id;
+                this._render();
+            });
+            row.add_child(b);
+        }
+        return row;
     }
 
     _emptyView() {

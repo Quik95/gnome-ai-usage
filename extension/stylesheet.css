@@ -282,3 +282,89 @@
 .ai-usage-chart-canvas {
   height: 150px;
 }
+
+/* usage / stats toggle */
+.ai-usage-subtabs {
+  border-radius: 8px;
+  padding: 3px;
+  spacing: 3px;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.ai-usage-subtab {
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 9.5pt;
+}
+
+.ai-usage-subtab:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.ai-usage-subtab.active {
+  font-weight: bold;
+}
+
+/* stats */
+.ai-usage-stats,
+.ai-usage-section {
+  spacing: 8px;
+}
+
+.ai-usage-section-head,
+.ai-usage-model-head {
+  spacing: 8px;
+}
+
+.ai-usage-section-title {
+  font-weight: bold;
+}
+
+.ai-usage-pill {
+  border-radius: 6px;
+  padding: 1px 8px;
+  font-size: 8.5pt;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.ai-usage-tile {
+  border-radius: 8px;
+  padding: 7px 9px;
+  spacing: 2px;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.ai-usage-tile-value {
+  font-weight: bold;
+  font-size: 12pt;
+  font-feature-settings: "tnum";
+}
+
+.ai-usage-tile-label {
+  color: #94a3b8;
+  font-size: 8.5pt;
+}
+
+.ai-usage-daily {
+  height: 44px;
+}
+
+.ai-usage-model {
+  spacing: 4px;
+}
+
+.ai-usage-model-name {
+  font-size: 9.5pt;
+}
+
+.ai-usage-model-share {
+  font-weight: bold;
+  font-size: 9pt;
+  min-width: 34px;
+  text-align: right;
+}
+
+.ai-usage-bar-thin {
+  height: 4px;
+}
