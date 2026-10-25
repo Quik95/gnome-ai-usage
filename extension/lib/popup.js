@@ -10,6 +10,7 @@ import {enabledFeatureTabs, enabledProviders} from './providers.js';
 import {pickActiveTab, popupTabs, rgbaCss, windowForGranularity} from './format.js';
 import {UsageChart} from './chart.js';
 import {statsView} from './stats.js';
+import {overviewView, spendSummary, spendView} from './feature-views.js';
 import {Tooltips, hbox, label, paragraph, quotaRow, spacer, statusChip, vbox} from './widgets.js';
 
 const TICK_SECONDS = 30;
@@ -230,6 +231,11 @@ export class Popup {
     }
 
     _featureSubtitle() {
+        const providers = this._controller.providers;
+        if (this.activeId === 'overview')
+            return _('%d providers').format(providers.length);
+        if (this.activeId === 'spend')
+            return spendSummary(providers, this._controller.localSpend);
         return '';
     }
 
@@ -258,8 +264,13 @@ export class Popup {
     }
 
     _buildView(provider, feature) {
-        if (feature)
-            return vbox();
+        if (feature) {
+            const open = id => this.selectTab(id);
+            const providers = this._controller.providers;
+            return this.activeId === 'spend'
+                ? spendView(providers, this._controller.localSpend, this._icons, open)
+                : overviewView(providers, this._icons, open);
+        }
         if (!provider)
             return this._emptyView();
         if (provider.details?.stats?.available !== true)

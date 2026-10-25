@@ -368,3 +368,87 @@
 .ai-usage-bar-thin {
   height: 4px;
 }
+
+/* overview / spend cards */
+.ai-usage-overview,
+.ai-usage-spend {
+  spacing: 8px;
+}
+
+.ai-usage-card {
+  border-radius: 8px;
+  padding: 8px;
+  spacing: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.ai-usage-card:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.ai-usage-card-body {
+  spacing: 10px;
+}
+
+.ai-usage-card-col {
+  spacing: 4px;
+}
+
+.ai-usage-card-head {
+  spacing: 6px;
+}
+
+.ai-usage-card-title {
+  font-weight: bold;
+}
+
+.ai-usage-card-pct {
+  font-weight: bold;
+}
+
+.ai-usage-card-error {
+  color: #fecaca;
+  font-size: 9pt;
+}
+
+.ai-usage-card-window {
+  spacing: 8px;
+}
+
+.ai-usage-card-window-label {
+  font-size: 8.5pt;
+  min-width: 96px;
+}
+
+.ai-usage-card-bar {
+  height: 6px;
+}
+
+.ai-usage-card-window-pct {
+  font-size: 8.5pt;
+  font-weight: bold;
+  min-width: 32px;
+  text-align: right;
+}
+
+.ai-usage-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.ai-usage-badge-icon {
+  icon-size: 16px;
+}
+
+.ai-usage-money {
+  font-weight: bold;
+  font-feature-settings: "tnum";
+}
+
+.ai-usage-spend-empty {
+  spacing: 6px;
+  padding: 12px 2px;
+}
