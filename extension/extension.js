@@ -1,11 +1,15 @@
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
+import {Controller} from './lib/controller.js';
+
 export default class AiUsageExtension extends Extension {
     enable() {
-        this._settings = this.getSettings();
+        this._controller = new Controller(this);
+        this._controller.start();
     }
 
     disable() {
-        this._settings = null;
+        this._controller.destroy();
+        this._controller = null;
     }
 }
