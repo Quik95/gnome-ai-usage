@@ -140,7 +140,7 @@ export function pickActiveTab(current, remembered, active, tabs) {
     const providers = tabs.filter(t => !t.feature);
     if (providers.some(t => t.id === active))
         return active;
-    return providers[0]?.id ?? tabs[0]?.id ?? '';
+    return providers[0]?.id ?? '';
 }
 
 // The chart window for a granularity, so the selected range carries across

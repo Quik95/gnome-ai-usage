@@ -2,11 +2,12 @@ import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import St from 'gi://St';
 
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 
 import {panelProviders} from './providers.js';
 import {slotText, slotTextColor, slotTooltip, DANGER} from './format.js';
+import {Popup} from './popup.js';
+import {Tooltips} from './widgets.js';
 
 // Top-bar button: one tinted logo + readout per slot of every pinned provider,
 // as the backend's `slots` describe them.
@@ -21,10 +22,12 @@ class AiUsageIndicator extends PanelMenu.Button {
         this._box = new St.BoxLayout({style_class: 'ai-usage-panel', y_align: Clutter.ActorAlign.CENTER});
         this.add_child(this._box);
 
-        this._tooltip = new St.Label({style_class: 'ai-usage-tooltip', visible: false});
-        Main.uiGroup.add_child(this._tooltip);
-        this.connect('notify::hover', () => this._syncTooltip());
-        this.menu.connect('open-state-changed', () => this._syncTooltip());
+        this._tooltips = new Tooltips();
+        this._tooltips.attach(this, () => this.menu.isOpen ? '' : this._tooltipText);
+        this.menu.connect('open-state-changed', () => this._tooltips.hide());
+
+        this._popup = new Popup(extension, controller, icons, this.menu);
+        this.menu.box.add_child(this._popup.actor);
 
         this._controller.connectObject('changed', () => this._sync(), this);
         this._settings.connectObject('changed::panel-providers', () => this._sync(), this);
@@ -46,7 +49,6 @@ class AiUsageIndicator extends PanelMenu.Button {
 
         this._tooltipText = slotTooltip(pinned) || 'AI Usage';
         this.accessible_name = this._tooltipText.replaceAll('\n', ', ');
-        this._tooltip.text = this._tooltipText;
     }
 
     _providerGroup(provider) {
@@ -100,26 +102,9 @@ class AiUsageIndicator extends PanelMenu.Button {
         });
     }
 
-    _syncTooltip() {
-        const show = this.hover && !this.menu.isOpen;
-        if (!show) {
-            this._tooltip.hide();
-            return;
-        }
-        const [x, y] = this.get_transformed_position();
-        const [w, h] = this.get_transformed_size();
-        const [, natW] = this._tooltip.get_preferred_width(-1);
-        const monitor = Main.layoutManager.findMonitorForActor(this);
-        let tx = Math.round(x + w / 2 - natW / 2);
-        if (monitor)
-            tx = Math.max(monitor.x, Math.min(tx, monitor.x + monitor.width - natW));
-        this._tooltip.set_position(tx, Math.round(y + h + 6));
-        this._tooltip.show();
-    }
-
     destroy() {
-        this._tooltip.destroy();
-        this._tooltip = null;
+        this._tooltips.destroy();
+        this._tooltips = null;
         this._settings = null;
         super.destroy();
     }

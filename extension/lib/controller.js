@@ -26,6 +26,7 @@ export class Controller extends EventEmitter {
 
         this.providers = [];
         this.localSpend = {};
+        this.active = '';
         this.updatedAt = 0;
         this.errorText = '';
         this.loading = false;

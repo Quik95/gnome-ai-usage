@@ -45,3 +45,198 @@
   padding: 6px 10px;
   font-size: 10pt;
 }
+
+/* ── Popup ─────────────────────────────────────────────────────────────── */
+
+.ai-usage-popup {
+  width: 440px;
+  spacing: 8px;
+  padding: 4px 12px 8px;
+}
+
+.ai-usage-scroll {
+  max-height: 620px;
+}
+
+.ai-usage-body {
+  spacing: 10px;
+}
+
+.ai-usage-view {
+  spacing: 12px;
+}
+
+.ai-usage-header {
+  spacing: 10px;
+  padding-bottom: 2px;
+}
+
+.ai-usage-header-icon {
+  icon-size: 22px;
+}
+
+.ai-usage-titles {
+  spacing: 1px;
+}
+
+.ai-usage-title {
+  font-weight: bold;
+  font-size: 12pt;
+}
+
+.ai-usage-subtitle,
+.ai-usage-dim,
+.ai-usage-detail,
+.ai-usage-footer,
+.ai-usage-empty,
+.ai-usage-quota-detail {
+  color: #94a3b8;
+}
+
+.ai-usage-small,
+.ai-usage-subtitle,
+.ai-usage-detail,
+.ai-usage-footer,
+.ai-usage-quota-detail {
+  font-size: 9pt;
+}
+
+.ai-usage-footer {
+  color: #ff4d4d;
+}
+
+.ai-usage-empty {
+  padding: 12px 2px;
+}
+
+.ai-usage-icon-button {
+  border-radius: 8px;
+  padding: 6px;
+}
+
+.ai-usage-icon-button:hover,
+.ai-usage-icon-button:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* status chip */
+.ai-usage-status {
+  border-radius: 6px;
+  padding: 2px 8px;
+  border: 1px solid rgba(51, 204, 102, 0.32);
+  background-color: rgba(51, 204, 102, 0.12);
+  color: #33cc66;
+}
+
+.ai-usage-status:hover {
+  background-color: rgba(51, 204, 102, 0.2);
+}
+
+.ai-usage-status-box {
+  spacing: 5px;
+}
+
+.ai-usage-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: #33cc66;
+}
+
+.ai-usage-status-label {
+  font-size: 8.5pt;
+}
+
+.ai-usage-status-minor { color: #ffbf33; border-color: rgba(255, 191, 51, 0.32); background-color: rgba(255, 191, 51, 0.12); }
+.ai-usage-status-minor .ai-usage-status-dot { background-color: #ffbf33; }
+.ai-usage-status-major { color: #ff801a; border-color: rgba(255, 128, 26, 0.32); background-color: rgba(255, 128, 26, 0.12); }
+.ai-usage-status-major .ai-usage-status-dot { background-color: #ff801a; }
+.ai-usage-status-critical { color: #ff4d4d; border-color: rgba(255, 77, 77, 0.32); background-color: rgba(255, 77, 77, 0.12); }
+.ai-usage-status-critical .ai-usage-status-dot { background-color: #ff4d4d; }
+.ai-usage-status-link { color: #94a3b8; border-color: rgba(148, 163, 184, 0.18); background-color: rgba(148, 163, 184, 0.06); }
+
+/* tabs */
+.ai-usage-tabs {
+  spacing: 4px;
+}
+
+.ai-usage-tab {
+  border-radius: 8px 8px 0 0;
+  padding: 6px 8px;
+  border-bottom: 2px solid transparent;
+}
+
+.ai-usage-tab:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.ai-usage-tab.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  font-weight: bold;
+}
+
+.ai-usage-tab-box {
+  spacing: 6px;
+}
+
+.ai-usage-tab-icon {
+  icon-size: 14px;
+}
+
+.ai-usage-tab-label {
+  font-size: 10pt;
+}
+
+.ai-usage-error {
+  background-color: rgba(115, 15, 15, 0.32);
+  color: #fecaca;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 9.5pt;
+}
+
+/* quota rows */
+.ai-usage-quota-rows {
+  spacing: 14px;
+  padding-top: 4px;
+}
+
+.ai-usage-quota-row {
+  spacing: 5px;
+}
+
+.ai-usage-quota-row.unavailable {
+  color: #94a3b8;
+}
+
+.ai-usage-quota-head {
+  spacing: 6px;
+}
+
+.ai-usage-quota-label {
+  font-weight: bold;
+}
+
+.ai-usage-quota-pct,
+.ai-usage-quota-value {
+  font-weight: bold;
+  font-size: 11pt;
+  font-feature-settings: "tnum";
+}
+
+.ai-usage-chip {
+  border-radius: 5px;
+  padding: 1px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.06);
+  font-size: 8.5pt;
+  font-feature-settings: "tnum";
+}
+
+.ai-usage-meter {
+  height: 8px;
+}
+
+.ai-usage-bar {
+  height: 6px;
+}
