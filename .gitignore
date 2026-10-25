@@ -1,5 +1,5 @@
 # Project
-schemas/gschemas.compiled
+gschemas.compiled
 *.shell-extension.zip
 
 # devenv

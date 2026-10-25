@@ -1,6 +1,7 @@
 {
   lib,
   stdenvNoCC,
+  glib,
   python3,
   kde-ai-usage,
 }: let
@@ -9,6 +10,11 @@
   # Pure JS shared by the upstream frontends: top-level `function`/`var` only,
   # no Qt APIs, so appending an export list is all it takes to make them ESM.
   sharedModules = ["Format" "UsageHistory" "FeatureTabs"];
+
+  extensionSrc = lib.fileset.toSource {
+    root = ./extension;
+    fileset = ./extension;
+  };
 in
   stdenvNoCC.mkDerivation {
     pname = "gnome-shell-extension-ai-usage";
@@ -31,6 +37,8 @@ in
           'os.path.join(os.environ.get("CLAUDE_CONFIG_DIR") or os.path.expanduser("~/.claude"), "'
     '';
 
+    nativeBuildInputs = [glib];
+
     dontConfigure = true;
     dontBuild = true;
 
@@ -40,6 +48,10 @@ in
       contents=package/contents
       dest=$out/share/gnome-shell/extensions/${uuid}
       mkdir -p "$dest/tools/sh" "$dest/icons" "$dest/shared"
+
+      cp -r ${extensionSrc}/. "$dest/"
+      chmod -R u+w "$dest"
+      glib-compile-schemas --strict "$dest/schemas"
 
       # Python backend (stdlib only) and the launchers the extension runs.
       cp -r "$contents/tools/aiusage" "$dest/tools/"

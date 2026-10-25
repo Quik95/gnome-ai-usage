@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="ai-usage">
+  <schema id="org.gnome.shell.extensions.ai-usage" path="/org/gnome/shell/extensions/ai-usage/">
+    <key name="enabled-providers" type="as">
+      <default>['claude', 'openai']</default>
+      <summary>Enabled providers</summary>
+      <description>Backend provider ids that are fetched and get a popup tab.</description>
+    </key>
+    <key name="panel-providers" type="as">
+      <default>['claude', 'openai']</default>
+      <summary>Providers pinned in the panel</summary>
+      <description>Enabled providers whose readouts are shown in the top bar.</description>
+    </key>
+    <key name="poll-interval" type="u">
+      <range min="30" max="3600"/>
+      <default>60</default>
+      <summary>Poll interval</summary>
+      <description>Seconds between two backend fetches.</description>
+    </key>
+    <key name="show-overview" type="b">
+      <default>true</default>
+      <summary>Show the Overview tab</summary>
+    </key>
+    <key name="show-spend" type="b">
+      <default>true</default>
+      <summary>Show the Spend tab</summary>
+    </key>
+    <key name="last-tab" type="s">
+      <default>''</default>
+      <summary>Last open popup tab</summary>
+      <description>A provider id, "overview" or "spend".</description>
+    </key>
+    <key name="chart-granularity" type="s">
+      <default>'7d'</default>
+      <summary>Usage chart range</summary>
+      <description>Chart window granularity (5h, 24h, 7d, 30d) carried across provider tabs.</description>
+    </key>
+  </schema>
+</schemalist>
