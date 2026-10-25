@@ -7,7 +7,8 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 import * as FeatureTabs from '../shared/FeatureTabs.js';
 import * as Format from '../shared/Format.js';
 import {enabledFeatureTabs, enabledProviders} from './providers.js';
-import {pickActiveTab, popupTabs} from './format.js';
+import {pickActiveTab, popupTabs, windowForGranularity} from './format.js';
+import {UsageChart} from './chart.js';
 import {Tooltips, hbox, label, paragraph, quotaRow, spacer, statusChip, vbox} from './widgets.js';
 
 const TICK_SECONDS = 30;
@@ -45,11 +46,13 @@ export class Popup {
             child: this._body,
         });
         this._footer = label('', 'ai-usage-footer');
+        this._chart = new UsageChart(id => this._selectChartWindow(id));
         for (const a of [this._tabs, this._detail, this._error, this._scroll, this._footer])
             this.actor.add_child(a);
 
         this._controller.connectObject(
             'changed', () => this._onData(),
+            'history-changed', () => this._menu.isOpen && this._render(),
             'loading-changed', () => this._syncLoading(),
             this.actor);
         this._settings.connectObject(
@@ -199,6 +202,8 @@ export class Popup {
         this._footer.visible = this._controller.errorText !== '';
 
         this._countdowns = [];
+        if (this._chart.get_parent())
+            this._chart.get_parent().remove_child(this._chart);
         this._body.destroy_all_children();
         this._body.add_child(this._buildView(provider, feature));
     }
@@ -273,11 +278,42 @@ export class Popup {
         if ((provider.quotaWindows || []).length === 0)
             rows.add_child(paragraph(provider.error ? '' : _('No quota windows reported.'), 'ai-usage-empty'));
         box.add_child(rows);
+
+        if (this._syncChart(provider))
+            box.add_child(this._chart);
         return box;
+    }
+
+    // The chart is kept across renders (it holds the paging and hover state)
+    // and just re-parented into each new usage view.
+    _syncChart(provider = this._activeProvider()) {
+        if (!provider)
+            return false;
+        const windows = provider.chartWindows || [];
+        const chartable = (provider.error || '') === '' && provider.ok !== false &&
+            provider.summary?.hasChart !== false && windows.length > 0;
+        const win = windowForGranularity(windows, this._settings.get_string('chart-granularity'));
+        const shown = chartable && this._chart.update({
+            history: this._controller.usageHistory,
+            windows,
+            windowId: win?.id ?? '',
+            accent: this.accentFor(provider.id),
+            currency: provider.details?.currency || '',
+        });
+        this._chart.visible = shown;
+        return shown;
+    }
+
+    _selectChartWindow(id) {
+        const win = (this._activeProvider()?.chartWindows || []).find(w => w.id === id);
+        if (win?.granularity)
+            this._settings.set_string('chart-granularity', win.granularity);
+        this._syncChart();
     }
 
     _onDestroy() {
         this._stopTick();
+        this._chart.destroy();
         this._tooltips.destroy();
         this._tooltips = null;
         this._settings = null;

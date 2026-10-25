@@ -240,3 +240,45 @@
 .ai-usage-bar {
   height: 6px;
 }
+
+/* usage chart */
+.ai-usage-chart {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.045);
+  padding: 6px 8px 4px;
+  spacing: 4px;
+}
+
+.ai-usage-chart-nav {
+  spacing: 4px;
+}
+
+.ai-usage-chart-range {
+  font-size: 8pt;
+  font-weight: bold;
+  color: #94a3b8;
+}
+
+.ai-usage-chart-windows {
+  spacing: 4px;
+}
+
+.ai-usage-chart-button {
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 8pt;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.ai-usage-chart-button:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.ai-usage-chart-button.active {
+  font-weight: bold;
+}
+
+.ai-usage-chart-canvas {
+  height: 150px;
+}
