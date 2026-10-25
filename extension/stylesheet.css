@@ -1,0 +1,47 @@
+/* ── Panel ─────────────────────────────────────────────────────────────── */
+
+.ai-usage-panel {
+  spacing: 12px;
+}
+
+.ai-usage-panel-provider {
+  spacing: 6px;
+}
+
+.ai-usage-panel-slot {
+  spacing: 4px;
+}
+
+.ai-usage-panel-icon {
+  icon-size: 14px;
+}
+
+.ai-usage-panel-label {
+  font-weight: bold;
+  font-feature-settings: "tnum";
+}
+
+.ai-usage-panel-divider {
+  width: 1px;
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.ai-usage-panel-error {
+  color: #ff4d4d;
+  font-size: 8px;
+}
+
+.ai-usage-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.ai-usage-tooltip {
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #f8fafc;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 10pt;
+}
