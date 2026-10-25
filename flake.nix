@@ -1,0 +1,67 @@
+{
+  description = "GNOME Shell frontend for the kde-ai-usage provider backend";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/default-linux";
+
+    devenv = {
+      url = "github:cachix/devenv";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Provider backend, icons and shared history/format JS are taken from upstream
+    # at build time instead of being vendored or forked.
+    kde-ai-usage = {
+      url = "github:Muddyblack/kde-ai-usage/v3.2.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  nixConfig = {
+    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
+    extra-substituters = "https://devenv.cachix.org";
+  };
+
+  outputs = {
+    nixpkgs,
+    devenv,
+    systems,
+    ...
+  } @ inputs: let
+    forEachSystem = nixpkgs.lib.genAttrs (import systems);
+  in {
+    formatter = forEachSystem (system: nixpkgs.legacyPackages.${system}.alejandra);
+
+    devShells = forEachSystem (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        default = devenv.lib.mkShell {
+          inherit inputs pkgs;
+          modules = [
+            {
+              # https://devenv.sh/reference/options/
+              packages = with pkgs; [
+                alejandra
+                dbus # dbus-run-session for headless gnome-shell test sessions
+                gettext
+                gjs
+                glib # glib-compile-schemas, gsettings, gdbus
+                gnome-shell # headless test sessions, gnome-extensions
+                jq
+                python3 # runs the upstream backend
+              ];
+
+              env.AI_USAGE_UPSTREAM = "${inputs.kde-ai-usage}";
+
+              enterShell = ''
+                echo "upstream backend: $AI_USAGE_UPSTREAM/package/contents/tools/sh/get-ai-usage"
+              '';
+            }
+          ];
+        };
+      }
+    );
+  };
+}
