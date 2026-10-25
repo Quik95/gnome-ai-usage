@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch makes the in-flight run pointless.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # The flake checks are the whole test suite: the packaged extension, alejandra
+  # and the gjs tests run against the build and upstream's recorded fixtures.
+  # --no-pure-eval is needed because the devenv shell refuses to evaluate
+  # without knowing the working directory, and `flake check` evaluates it too.
+  flake-check:
+    name: nix flake check (${{ matrix.system }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: x86_64-linux
+            runner: ubuntu-latest
+          - system: aarch64-linux
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31
+        with:
+          extra_nix_config: |
+            accept-flake-config = true
+
+      - uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
+        with:
+          primary-key: nix-${{ matrix.system }}-flake-${{ hashFiles('flake.lock', '**/*.nix') }}
+          restore-prefixes-first-match: nix-${{ matrix.system }}-flake-
+          gc-max-store-size-linux: 2G
+          purge: true
+          purge-prefixes: nix-${{ matrix.system }}-flake-
+          purge-created: 604800
+
+      - run: nix flake check --no-pure-eval -L
+
+      - name: nix build
+        run: nix build .#default -L
+
+      # GNOME Shell refuses an extension whose directory name differs from its
+      # uuid or whose schema is not compiled, and a backend that lost its
+      # interpreter pin only fails once the panel polls it.
+      - name: check the built package
+        run: |
+          set -euo pipefail
+          ext=result/share/gnome-shell/extensions
+          uuid=$(jq -er .uuid extension/metadata.json)
+          test -s "$ext/$uuid/metadata.json"
+          test -s "$ext/$uuid/extension.js"
+          test -s "$ext/$uuid/prefs.js"
+          test -s "$ext/$uuid/schemas/gschemas.compiled"
+          test -s "$ext/$uuid/shared/UsageHistory.js"
+          echo '{}' | "$ext/$uuid/tools/sh/get-ai-usage" --normalize > /dev/null
+
+  # The tests import only the pure modules; the shell-side files would otherwise
+  # surface a syntax error only when GNOME Shell loads the extension. node is
+  # preinstalled on the runner, so this needs no Nix and finishes in seconds.
+  extension-syntax:
+    name: extension syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: node --check
+        run: |
+          set -euo pipefail
+          git ls-files -z 'extension/*.js' 'tests/*.js' | while IFS= read -r -d '' f; do
+            node --input-type=module --check < "$f" || { echo "::error file=$f::syntax error"; exit 1; }
+          done
+      - run: jq -e . extension/metadata.json > /dev/null
+
+  workflows:
+    name: actionlint / zizmor
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31
+
+      - uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
+        with:
+          primary-key: nix-${{ runner.os }}-workflows-${{ hashFiles('flake.lock') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-workflows-
+          gc-max-store-size-linux: 1G
+
+      - run: nix shell --inputs-from . nixpkgs#actionlint nixpkgs#zizmor -c actionlint
+      - run: nix shell --inputs-from . nixpkgs#actionlint nixpkgs#zizmor -c zizmor .github/workflows
