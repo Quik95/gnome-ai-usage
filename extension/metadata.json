@@ -1,7 +1,7 @@
 {
   "uuid": "ai-usage@quik95.github.io",
   "name": "AI Usage",
-  "description": "Claude and OpenAI plan usage in the top bar, rendered from the kde-ai-usage provider backend.",
+  "description": "Claude and OpenAI plan usage in the top bar, rendered from the tideSI (formerly kde-ai-usage) provider backend.",
   "shell-version": ["50"],
   "url": "https://github.com/Quik95/gnome-ai-usage",
   "settings-schema": "org.gnome.shell.extensions.ai-usage",

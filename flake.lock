@@ -124,27 +124,6 @@
         "type": "github"
       }
     },
-    "kde-ai-usage": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1790613209,
-        "narHash": "sha256-hn+m8Bc3Wk2l6oxVrFLjYT193UgWA6kO5YOKGiGj9DI=",
-        "owner": "Muddyblack",
-        "repo": "kde-ai-usage",
-        "rev": "fb99cf624a4ed02912fc5018e4f532606c1d1965",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Muddyblack",
-        "ref": "v3.2.0",
-        "repo": "kde-ai-usage",
-        "type": "github"
-      }
-    },
     "nix": {
       "inputs": {
         "flake-compat": [
@@ -230,9 +209,9 @@
     "root": {
       "inputs": {
         "devenv": "devenv",
-        "kde-ai-usage": "kde-ai-usage",
         "nixpkgs": "nixpkgs",
-        "systems": "systems"
+        "systems": "systems",
+        "tidesi": "tidesi"
       }
     },
     "rust-overlay": {
@@ -268,6 +247,27 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default-linux",
+        "type": "github"
+      }
+    },
+    "tidesi": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792580937,
+        "narHash": "sha256-FMSQ6DSdXjAsWCD18wK2KE+fwuBsj3YbD3Y53kASq88=",
+        "owner": "Muddyblack",
+        "repo": "tidesi",
+        "rev": "3dc5da68e73f6ec3d3a44ebf26535dd6fe35e20c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Muddyblack",
+        "ref": "v4.0.1",
+        "repo": "tidesi",
         "type": "github"
       }
     },

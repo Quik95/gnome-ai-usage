@@ -1,5 +1,5 @@
 {
-  description = "GNOME Shell frontend for the kde-ai-usage provider backend";
+  description = "GNOME Shell frontend for the tideSI (formerly kde-ai-usage) provider backend";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -12,8 +12,8 @@
 
     # Provider backend, icons and shared history/format JS are taken from upstream
     # at build time instead of being vendored or forked.
-    kde-ai-usage = {
-      url = "github:Muddyblack/kde-ai-usage/v3.2.0";
+    tidesi = {
+      url = "github:Muddyblack/tidesi/v4.0.1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -36,7 +36,7 @@
 
     packages = forEachSystem (system: {
       default = nixpkgs.legacyPackages.${system}.callPackage ./package.nix {
-        inherit (inputs) kde-ai-usage;
+        inherit (inputs) tidesi;
       };
     });
 
@@ -61,7 +61,7 @@
           mkdir fixtures
           for f in claude-success openai-codex-success claude-offline; do
             ${extensionDir}/tools/sh/get-ai-usage --normalize \
-              <${inputs.kde-ai-usage}/tests/fixtures/$f.json >fixtures/$f.json
+              <${inputs.tidesi}/tests/fixtures/$f.json >fixtures/$f.json
           done
           EXT_DIR=${extensionDir} FIXTURES_DIR=$PWD/fixtures gjs -m ${./tests/extension.test.js}
           touch $out
@@ -89,10 +89,10 @@
                 python3 # runs the upstream backend
               ];
 
-              env.AI_USAGE_UPSTREAM = "${inputs.kde-ai-usage}";
+              env.AI_USAGE_UPSTREAM = "${inputs.tidesi}";
 
               enterShell = ''
-                echo "upstream backend: $AI_USAGE_UPSTREAM/package/contents/tools/sh/get-ai-usage"
+                echo "upstream backend: $AI_USAGE_UPSTREAM/backend/sh/get-ai-usage"
               '';
             }
           ];
