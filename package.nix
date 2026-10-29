@@ -88,6 +88,7 @@ in
         } >"$dest/shared/$module.js"
       done
 
+      install -m644 ${./LICENSE} "$dest/LICENSE"
       install -m644 LICENSE "$dest/LICENSE.tidesi"
 
       runHook postInstall
@@ -98,6 +99,7 @@ in
     meta = {
       description = "GNOME Shell frontend for the tideSI (formerly kde-ai-usage) provider backend";
       homepage = "https://github.com/Quik95/gnome-ai-usage";
+      license = with lib.licenses; [eupl12 mit];
       platforms = lib.platforms.linux;
     };
   }
