@@ -22,6 +22,10 @@ in
 
     src = tidesi;
 
+    # Settings, stats-cache and transcripts ignore CLAUDE_CONFIG_DIR in 4.0.1.
+    # Proposed upstream as Quik95/tidesi@fix/claude-config-dir; drop once released.
+    patches = [./patches/claude-config-dir.patch];
+
     postPatch = ''
       # The shell tools resolve Python from PATH, but gnome-shell inherits the
       # systemd user session's PATH, which on NixOS has no Python at all, so
@@ -30,11 +34,6 @@ in
       substituteInPlace backend/sh/python-interp.sh \
         --replace-fail 'PY_DEFAULT="python3"' \
                        'PY_DEFAULT="${python3}/bin/python3"'
-
-      # Upstream honors CLAUDE_CONFIG_DIR everywhere except the stats/settings reads.
-      substituteInPlace backend/tidesi/collect.py \
-        --replace-fail 'os.path.expanduser("~/.claude/' \
-          'os.path.join(os.environ.get("CLAUDE_CONFIG_DIR") or os.path.expanduser("~/.claude"), "'
     '';
 
     nativeBuildInputs = [glib];
