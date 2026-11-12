@@ -31,16 +31,16 @@ jobs:
           - system: aarch64-linux
             runner: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
-      - uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702 # v31
+      - uses: cachix/install-nix-action@v31.11.2
         with:
           extra_nix_config: |
             accept-flake-config = true
 
-      - uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
+      - uses: nix-community/cache-nix-action@v7.0.2
         with:
           primary-key: nix-${{ matrix.system }}-flake-${{ hashFiles('flake.lock', '**/*.nix') }}
           restore-prefixes-first-match: nix-${{ matrix.system }}-flake-
@@ -76,7 +76,7 @@ jobs:
     name: extension syntax
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - name: node --check
@@ -91,13 +91,13 @@ jobs:
     name: actionlint / zizmor
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
-      - uses: cachix/install-nix-action@448cde739abec1eaf0646249e3d25bb8d9bc7702 # v31
+      - uses: cachix/install-nix-action@v31.11.2
 
-      - uses: nix-community/cache-nix-action@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
+      - uses: nix-community/cache-nix-action@v7.0.2
         with:
           primary-key: nix-${{ runner.os }}-workflows-${{ hashFiles('flake.lock') }}
           restore-prefixes-first-match: nix-${{ runner.os }}-workflows-
@@ -105,3 +105,17 @@ jobs:
 
       - run: nix shell --inputs-from . nixpkgs#actionlint nixpkgs#zizmor -c actionlint
       - run: nix shell --inputs-from . nixpkgs#actionlint nixpkgs#zizmor -c zizmor .github/workflows
+
+  # Fails when .github/workflows/actions.lock is out of sync with the
+  # workflows or a locked pin no longer verifies upstream.
+  lockfile:
+    name: actions.lock
+    runs-on: ubuntu-slim
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - run: gh extension install github/gh-actions-lock --pin v0.4.1
+      - run: gh actions-lock --verify
